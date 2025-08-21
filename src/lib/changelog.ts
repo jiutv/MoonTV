@@ -11,6 +11,21 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: "2.1.0",
+    date: "2025-08-21",
+    added: [
+    "支持流式搜索搜索模式",
+    "搜索结果展示视频源"
+    ],
+    changed: [
+    "重新支持localstorage",
+    "独立缓存播放源"
+    ],
+    fixed: [
+    "修复视频播放缓存逻辑问题"
+    ]
+  },
+  {
     version: "2.0.1",
     date: "2025-08-13",
     added: [

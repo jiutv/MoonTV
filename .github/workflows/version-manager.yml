@@ -1,0 +1,49 @@
+name: Version Manager
+
+on:
+  workflow_dispatch: # 允许手动触发
+  push:
+    tags:
+      - 'v*' # 当推送版本标签时触发
+
+jobs:
+  update-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run convert-changelog script
+        run: node scripts/convert-changelog.js
+        env:
+          GITHUB_ACTIONS: 'true'
+
+      - name: Commit version updates
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git diff --quiet && git diff --staged --quiet || git commit -m "chore: update version files for ${{ github.ref_name }}"
+          git push
+
+      - name: Show version statistics
+        run: |
+          echo "📊 版本更新完成:"
+          echo "当前版本: ${{ github.ref_name }}"
+          echo "VERSION.txt 内容:"
+          cat VERSION.txt
+          echo ""
+          echo "version.ts 中的 CURRENT_VERSION:"
+          grep "CURRENT_VERSION" src/lib/version.ts

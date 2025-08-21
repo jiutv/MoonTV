@@ -1,0 +1,59 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*' # 当推送以 'v' 开头的标签时触发
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 获取完整的git历史，包括标签
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run convert-changelog script
+        run: node scripts/convert-changelog.js
+        env:
+          GITHUB_ACTIONS: 'true' # 告诉脚本这是在GitHub Actions环境中运行
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            ## 变更日志
+
+            请查看 [CHANGELOG](CHANGELOG) 文件了解详细变更内容。
+
+            ## 下载
+
+            - [Source code (zip)](https://github.com/${{ github.repository }}/archive/${{ github.ref }}.zip)
+            - [Source code (tar.gz)](https://github.com/${{ github.repository }}/archive/${{ github.ref }}.tar.gz)
+          draft: false
+          prerelease: false
+
+      - name: Build project
+        run: npm run build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-files
+          path: .next/
+          retention-days: 30
