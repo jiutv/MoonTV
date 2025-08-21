@@ -1,4 +1,4 @@
-# MoonTV(生前)
+# MoonTV(Branch)
 
 <div align="center">
   <img src="public/logo.png" alt="LibreTV Logo" width="120">
@@ -20,7 +20,7 @@
 
 ## ✨ 功能特性
 
-- 🔍 **多源聚合搜索**：~~内置数十个免费资源站点，一次搜索立刻返回全源结果~~。
+- 🔍 **多源聚合搜索**：增加流式搜索快速返回结果。
 - 📄 **丰富详情页**：支持剧集列表、演员、年份、简介等完整信息展示。
 - ▶️ **流畅在线播放**：集成 HLS.js & ArtPlayer。
 - ❤️ **收藏 + 继续观看**：支持 Redis/Upstash 存储，多端同步进度。
@@ -38,7 +38,7 @@
 
 ## 🗺 目录
 
-- [MoonTV(生前)](#moontv生前)
+- [MoonTV(Branch)](#moontvbranch)
   - [✨ 功能特性](#-功能特性)
   - [🗺 目录](#-目录)
   - [技术栈](#技术栈)
@@ -161,7 +161,7 @@ NEXT_PUBLIC_DOUBAN_PROXY_TYPE 选项解释：
 - cors-proxy-zwei: 浏览器向 cors proxy 请求豆瓣数据，该 cors proxy 由 [Zwei](https://github.com/bestzwei) 搭建
 - cmliussss-cdn-tencent: 浏览器向豆瓣 CDN 请求数据，该 CDN 由 [CMLiussss](https://github.com/cmliu) 搭建，并由腾讯云 cdn 提供加速
 - cmliussss-cdn-ali: 浏览器向豆瓣 CDN 请求数据，该 CDN 由 [CMLiussss](https://github.com/cmliu) 搭建，并由阿里云 cdn 提供加速
-- cors-anywhere: 浏览器向 cors proxy 请求豆瓣数据，该 cors proxy 为公共服务 [cors-anywhere](https://cors-anywhere.com)，限制每分钟 20 次请求
+
 - custom: 用户自定义 proxy，由 NEXT_PUBLIC_DOUBAN_PROXY 定义
 
 NEXT_PUBLIC_DOUBAN_IMAGE_PROXY_TYPE 选项解释：
