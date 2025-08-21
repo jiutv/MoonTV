@@ -72,6 +72,29 @@ export async function GET(request: Request) {
   const { readable, writable } = new TransformStream();
   const writer = writable.getWriter();
 
+  // 安全写入与断连处理
+  let shouldStop = false;
+  const abortSignal = (request as any).signal as AbortSignal | undefined;
+  abortSignal?.addEventListener('abort', () => {
+    shouldStop = true;
+    try {
+      writer.close();
+    } catch {
+      // ignore
+    }
+  });
+
+  const safeWrite = async (obj: unknown) => {
+    if (shouldStop || abortSignal?.aborted) return false;
+    try {
+      await writer.write(encoder.encode(JSON.stringify(obj) + '\n'));
+      return true;
+    } catch {
+      shouldStop = true;
+      return false;
+    }
+  };
+
   (async () => {
     const aggregatedResults: any[] = [];
     for (const site of apiSites) {
@@ -86,14 +109,21 @@ export async function GET(request: Request) {
             });
           }
           aggregatedResults.push(...filteredResults);
-          await writer.write(encoder.encode(JSON.stringify({ pageResults: filteredResults }) + '\n'));
+          if (!(await safeWrite({ pageResults: filteredResults }))) {
+            break;
+          }
         }
       } catch (err: any) {
         console.warn(`搜索失败 ${site.name}:`, err.message);
       }
+      if (shouldStop) break;
     }
-    await writer.write(encoder.encode(JSON.stringify({ aggregatedResults }) + '\n'));
-    writer.close();
+    await safeWrite({ aggregatedResults });
+    try {
+      await writer.close();
+    } catch {
+      // ignore
+    }
   })();
 
   const cacheTime = await getCacheTime();

@@ -236,7 +236,6 @@ function SearchPageClient() {
     setShowResults(true);
     setShowSuggestions(false);
 
-    router.push(`/search?q=${encodeURIComponent(trimmed)}`);
     fetchSearchResults(trimmed);
     addSearchHistory(trimmed);
   };
@@ -247,7 +246,6 @@ function SearchPageClient() {
     setIsLoading(true);
     setShowResults(true);
 
-    router.push(`/search?q=${encodeURIComponent(suggestion)}`);
     fetchSearchResults(suggestion);
     addSearchHistory(suggestion);
   };
